@@ -10,6 +10,7 @@ from keras.callbacks import ModelCheckpoint
 
 from tensorflow.keras.applications import EfficientNetB3, EfficientNetB2, EfficientNetB1, EfficientNetB0
 from tensorflow.keras.applications import ResNet50, ResNet101, ResNet152
+from tensorflow.keras.applications import MobileNet, DenseNet169, InceptionV3, Xception
 
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
 from tensorflow.keras.models import Model
@@ -71,11 +72,19 @@ def run(
         base_model = ResNet101(include_top=False, weights='imagenet', input_shape=input_shape)
     elif weight == 'ResNet152':
         base_model = ResNet152(include_top=False, weights='imagenet', input_shape=input_shape)
+    elif weight == 'MobileNet':
+        base_model = MobileNet(include_top=False, weights='imagenet', input_shape=input_shape)
+    elif weight == 'DenseNet169':
+        base_model = DenseNet169(include_top=False, weights='imagenet', input_shape=input_shape)    
+    elif weight == 'InceptionV3':
+        base_model = InceptionV3(include_top=False, weights='imagenet', input_shape=input_shape)       
+    elif weight == 'Xception':
+        base_model = Xception(include_top=False, weights='imagenet', input_shape=input_shape)     
     # Creating model architecture
     x = GlobalAveragePooling2D()(base_model.output)
     output_layer = Dense(len(mlb.classes_), activation='sigmoid')(x)
     model = Model(inputs=base_model.input, outputs=output_layer)
-    checkpoint = ModelCheckpoint('./working/last.h5', save_freq='epoch', monitor = 'val_loss', verbose = 1, period=save_freq)
+    checkpoint = ModelCheckpoint('./working/' + weight + '_last.h5', save_freq='epoch', monitor = 'val_loss', verbose = 1, period=save_freq)
     # Compile the model
     optimizer = Adam(learning_rate=learning_rate)
     loss = BinaryCrossentropy()
